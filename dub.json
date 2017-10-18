@@ -1,0 +1,15 @@
+{
+    "name": "guesspop",
+    "targetType": "executable",
+    "description": "A Poorly Programmed Production. Presenting: Guess Pop!",
+    "copyright": "Copyright © 2017 none",
+	"lflags-osx" : ["-L../DSFMLlibs"],
+    "sourcePaths" : ["source",
+                     "../JMiscLib/source",
+                     "../JecLib/source"
+					 ],
+    "dependencies": {
+        "dsfml:graphics": "~>2.1",
+		"dsfml:audio": "~>2.1"
+    }
+}
