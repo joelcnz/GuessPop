@@ -1,5 +1,16 @@
 import base;
 
+struct Info {
+    string text;
+    
+    string toString() {
+        return text;
+    }
+}
+
+Info[string] lines;
+string title, list;
+
 /**
 	The Main
  */
@@ -95,28 +106,9 @@ auto setupAndStuff() {
 }
 
 void run() {
-    struct Info {
-		string text;
-		
-		string toString() {
-			return text;
-		}
-	}
+    import std.path;
+    import std.string;
 	
-	Info[string] lines;
-	lines["W"] = Info("W Would you consider yourself to be a good person?");
-	lines["D1"] = Info("D Do you think you have kept the Ten Commandments?");
-	lines["J"] = Info("J Judgement -- If God were to judge you by the Ten Commandments, do you think you would be innocent or guilty?");
-	lines["D2"] = Info("D Destiny -- Do you think you would go to heaven or hell?");
-	
-	lines["C"] = Info("C Concern -- Does that concern you?");
-	lines["c"] = Info("c Cross -- Jesus suffered for our sins, died and rose from the dead.");
-	lines["R"] = Info("R Repentance -- Confess and forsake all sin.");
-	lines["A"] = Info("A and");
-	lines["F"] = Info("F Faith -- More than belief, it's trust in Jesus for salvation.");
-	lines["T"] = Info("T Truth -- Point to the truth of the Bible and encourage them to get right with God today.");
-
-
     with( g_letterBase )
         setTextType( TextType.line );
     scope(exit)
@@ -127,6 +119,7 @@ void run() {
     prefix = g_letterBase.count();
     auto firstRun = true;
     auto done = NO;
+    string[] files;
     while(! done) {
         if (! g_window.isOpen())
             done = YES;
@@ -180,37 +173,51 @@ void run() {
         if (userInput.length > 0) {
             // If command not used, the user input is treated as thing typed from memory
             // Switch on command
-            switch (userInput) {
+            const args = userInput.split[1 .. $];
+            switch (userInput.split[0]) {
                 // Display help
                 case "h":
                     g_letterBase.addTextln("Help:" ~ newline ~
                         "q - Quit" ~ newline ~
                         "h - This help" ~ newline ~
                         "v - View stuff to recall" ~ newline ~
-                        "cls/clear - Clear screen (hide memory verse)"
+                        "cls/clear - Clear screen (hide memory verse)" ~ newline ~
+                        "ls - List projects" ~ newline ~
+                        "ld - load"
                     );
+                break;
+                case "ls":
+                    import std.file: dirEntries, SpanMode;
+                    import std.range: enumerate;
+
+                    g_letterBase.addTextln("File list:");
+                    files.length = 0;
+                    foreach(i, string name; dirEntries(buildPath("projects"), "*.{txt}", SpanMode.shallow).enumerate) {
+                        g_letterBase.addTextln(i, " - ", name);
+                        files ~= name;
+                    }
+                break;
+                case "ld":
+                    if (args.length != 1) {
+                        g_letterBase.addTextln("Wrong amount of parameters!");
+                        break;
+                    }
+                    string fileName;
+                    try {
+                        import std.conv;
+
+                        fileName = files[args[0].to!int];
+                    } catch(Exception e) {
+                        g_letterBase.addTextln("Input error!");
+                        break;
+                    }
+                    loadProject(fileName);
                 break;
                 case "cls", "clear":
                     clearScreen;
                 break;
-                case "v":
-                    updateFileNLetterBase(
-`WDJD:
-
-W Would you consider yourself to be a good person?
-D1 Do you think you have kept the Ten Commandments?
-J Judgement -- If God were to judge you by the Ten Commandments, do you think you would be innocent or guilty?
-D2 Destiny -- Do you think you would go to heaven or hell?
-
-
-CcRAFT:
-
-C Concern -- Does that concern you?
-c Cross -- Jesus suffered for our sins, died and rose from the dead.
-R Repentance -- Confess and forsake all sin.
-A and
-F Faith -- More than belief, it's trust in Jesus for salvation.
-T Truth -- Point to the truth of the Bible and encourage them to get right with God today.`);
+                case "l":
+                    updateFileNLetterBase(title, "\n\n", list);
                 break;
                 // quit program
                 case "q":
@@ -231,4 +238,26 @@ T Truth -- Point to the truth of the Bible and encourage them to get right with 
 /// clear the screen
 void clearScreen() {
     g_letterBase.setText("");
+}
+
+void loadProject(in string fileName) {
+    import std.conv: to;
+    import std.stdio: File;
+    import std.string: split;
+    import std.path: buildPath;
+    import std.range: enumerate;
+
+    enum Flag : bool {down, up}
+
+    bool listFlag = Flag.down;
+    foreach(i, line; File(buildPath(fileName)).byLine.enumerate) {
+        if (i == 1)
+            title = line.to!string;
+        if (listFlag == Flag.up) {
+            lines[line.split[0].to!string] = Info(line[line.split[0].length + 1 .. $].to!string);
+            list ~= line.to!string ~ "\n";
+        }
+        if (line.to!string == "list:")
+            listFlag = Flag.up;
+    }
 }
