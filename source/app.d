@@ -11,13 +11,14 @@ struct Info {
 Info[string] lines;
 string title, list;
 
+enum projects = "projects";
 /**
 	The Main
  */
 int main(string[] args) {
     import std.stdio;
 
-    immutable program = "Way Master";
+    immutable program = "Guess Pop";
 	version(Windows) {
 		writeln( "This is a Windows version of " ~ program );
 	}
@@ -188,12 +189,18 @@ void run() {
                 break;
                 case "ls":
                     import std.file: dirEntries, SpanMode;
+                    import std.path: dirSeparator;
                     import std.range: enumerate;
+                    import std.string: split;
 
                     g_letterBase.addTextln("File list:");
                     files.length = 0;
-                    foreach(i, string name; dirEntries(buildPath("projects"), "*.{txt}", SpanMode.shallow).enumerate) {
-                        g_letterBase.addTextln(i, " - ", name);
+                    foreach(i, string name; dirEntries(buildPath(projects), "*.{txt}", SpanMode.shallow).enumerate) {
+                        import std.algorithm: until;
+                        import std.conv: to;
+
+                        name = name.split(dirSeparator)[1];
+                        g_letterBase.addTextln(i, " - ", name.until("."));
                         files ~= name;
                     }
                 break;
@@ -206,12 +213,18 @@ void run() {
                     try {
                         import std.conv;
 
-                        fileName = files[args[0].to!int];
+                        int index = args[0].to!int;
+                        if (index >= 0 && index < files.length)
+                            fileName = files[index];
+                        else
+                            throw new Exception("Index out of bounds");
                     } catch(Exception e) {
                         g_letterBase.addTextln("Input error!");
                         break;
                     }
                     loadProject(fileName);
+                    import std.algorithm: until;
+                    g_letterBase.addTextln(fileName.until("."), " - project loaded..");
                 break;
                 case "cls", "clear":
                     clearScreen;
@@ -250,7 +263,9 @@ void loadProject(in string fileName) {
     enum Flag : bool {down, up}
 
     bool listFlag = Flag.down;
-    foreach(i, line; File(buildPath(fileName)).byLine.enumerate) {
+    list.length = 0;
+    lines.clear;
+    foreach(i, line; File(buildPath(projects, fileName)).byLine.enumerate) {
         if (i == 1)
             title = line.to!string;
         if (listFlag == Flag.up) {
