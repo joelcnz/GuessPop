@@ -1,3 +1,4 @@
+//#windows version needed for short cut to quit
 import base;
 
 struct Info {
@@ -54,7 +55,8 @@ auto setupAndStuff() {
     if (int retVal = jec.setup != 0) {
         import std.stdio: writefln;
 
-        writefln("File: %s, Error function: %s, Line: %s, Return value: %s", __FILE__, __FUNCTION__, __LINE__, retVal);
+        writefln("File: %s, Error function: %s, Line: %s, Return value: %s",
+            __FILE__, __FUNCTION__, __LINE__, retVal);
         return -1;
     }
 
@@ -71,7 +73,8 @@ auto setupAndStuff() {
     if (int retVal = jec.setup != 0) {
         import std.stdio: writefln;
 
-        writefln("File: %s, Error function: %s, Line: %s, Return value: %s", __FILE__, __FUNCTION__, __LINE__, retVal);
+        writefln("File: %s, Error function: %s, Line: %s, Return value: %s",
+            __FILE__, __FUNCTION__, __LINE__, retVal);
         return retVal;
     }
 
@@ -93,7 +96,8 @@ auto setupAndStuff() {
 
     g_window.setFramerateLimit(60);
 
-	g_letterBase = new LetterManager("lemgreen32.bmp", 8, 17, Square(0,0, g_window.getSize.x, g_window.getSize.y));
+	g_letterBase = new LetterManager("lemgreen32.bmp", 8, 17,
+        Square(0,0, g_window.getSize.x, g_window.getSize.y));
     assert(g_letterBase, "Error loading bmp");
 
 	with(g_letterBase) {
@@ -133,9 +137,12 @@ void run() {
             }
         }
 
-        if ((Keyboard.isKeyPressed(Keyboard.Key.LSystem) || Keyboard.isKeyPressed(Keyboard.Key.RSystem)) &&
-            Keyboard.isKeyPressed(Keyboard.Key.Q))
-            done = YES;
+        version(OSX)
+            if ((Keyboard.isKeyPressed(Keyboard.Key.LSystem) ||
+                Keyboard.isKeyPressed(Keyboard.Key.RSystem)) &&
+                Keyboard.isKeyPressed(Keyboard.Key.Q))
+                done = YES;
+        //#windows version needed for short cut to quit
 
         // print for prompt, text depending on whether the section has any verses or not
         if (enterPressed || firstRun) {
