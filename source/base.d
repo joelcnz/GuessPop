@@ -1,13 +1,11 @@
-//#not used
-//#not much
-//input display an do not work on Mac
+//#Why doesn't this work, get weird effects
 module base;
 
+import std.conv;
+import std.datetime;
+import std.range;
 import std.stdio;
 import std.string;
-import std.datetime;
-import std.conv;
-import std.range;
 
 public import jec;
 
@@ -20,7 +18,8 @@ void updateFileNLetterBase(T...)(T args) {
 	import std.typecons: tuple; // untested
 	import std.conv: text;
 
-	g_letterBase.addTextln(text(tuple(args).expand));
+	//g_letterBase.addTextln(text(tuple(args).expand));
+	g_letterBase.addTextln(args); //#Why doesn't this work, get weird effects
 	upDateStatus(args);
 }
 
