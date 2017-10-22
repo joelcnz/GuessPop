@@ -101,7 +101,7 @@ auto setupAndStuff() {
     assert(g_letterBase, "Error loading bmp");
 
 	with(g_letterBase) {
-		updateFileNLetterBase("Welcome to Way Master - Recall program" ~ newline);
+		updateFileNLetterBase("Welcome Guess Pop - Recall program" ~ newline);
 		setLockAll(true);
 	}
 
@@ -148,7 +148,8 @@ void run() {
         if (enterPressed || firstRun) {
             firstRun = false;
             enterPressed = false;
-            updateFileNLetterBase("Enter query, (Enter 'h' for help):");
+            if (! done)
+                updateFileNLetterBase("Enter query, (Enter 'h' for help):");
             g_letterBase.setLockAll(true);
             prefix = g_letterBase.count();
         }
@@ -184,17 +185,17 @@ void run() {
             const args = userInput.split[1 .. $];
             switch (userInput.split[0]) {
                 // Display help
-                case "h":
+                case "help":
                     g_letterBase.addTextln("Help:" ~ newline ~
-                        "q - Quit" ~ newline ~
-                        "h - This help" ~ newline ~
-                        "v - View stuff to recall" ~ newline ~
+                        "quit - Quit" ~ newline ~
+                        "help - This help" ~ newline ~
+                        "list - View stuff to recall" ~ newline ~
                         "cls/clear - Clear screen (hide memory verse)" ~ newline ~
-                        "ls - List projects" ~ newline ~
-                        "ld - load"
+                        "projects - List projects" ~ newline ~
+                        "load # - load project (see list)"
                     );
                 break;
-                case "ls":
+                case "projects":
                     import std.file: dirEntries, SpanMode;
                     import std.path: dirSeparator;
                     import std.range: enumerate;
@@ -211,7 +212,7 @@ void run() {
                         files ~= name;
                     }
                 break;
-                case "ld":
+                case "load":
                     if (args.length != 1) {
                         g_letterBase.addTextln("Wrong amount of parameters!");
                         break;
@@ -236,14 +237,15 @@ void run() {
                 case "cls", "clear":
                     clearScreen;
                 break;
-                case "l":
+                case "list":
                     updateFileNLetterBase(title, "\n\n", list);
                 break;
                 // quit program
-                case "q":
+                case "quit":
                     done = true;
                 break;
                 default:
+                    g_letterBase.addTextln(userInput.split[0], " - Unhandled command..");
                 break;
             }
         }

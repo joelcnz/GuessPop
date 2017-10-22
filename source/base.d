@@ -1,4 +1,3 @@
-//#Why doesn't this work, get weird effects
 module base;
 
 import std.conv;
@@ -18,8 +17,7 @@ void updateFileNLetterBase(T...)(T args) {
 	import std.typecons: tuple; // untested
 	import std.conv: text;
 
-	//g_letterBase.addTextln(text(tuple(args).expand));
-	g_letterBase.addTextln(args); //#Why doesn't this work, get weird effects
+	g_letterBase.addTextln(args);
 	upDateStatus(args);
 }
 
