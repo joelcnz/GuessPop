@@ -181,10 +181,12 @@ void run() {
         else
             userInput = "q";
         if (userInput.length > 0) {
+            import std.string: toLower;
+
             // If command not used, the user input is treated as thing typed from memory
             // Switch on command
             const args = userInput.split[1 .. $];
-            switch (userInput.split[0]) {
+            switch (userInput.split[0].toLower) {
                 // Display help
                 case "help":
                     g_letterBase.addTextln("Help:" ~ newline ~
@@ -243,7 +245,7 @@ void run() {
                     updateFileNLetterBase(title, "\n\n", list);
                 break;
                 // quit program
-                case "quit", "command+Q":
+                case "quit", "command+q":
                     done = true;
                 break;
                 default:
