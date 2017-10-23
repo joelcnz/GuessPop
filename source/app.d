@@ -149,7 +149,7 @@ void run() {
             firstRun = false;
             enterPressed = false;
             if (! done)
-                updateFileNLetterBase("Enter query, (Enter 'h' for help):");
+                updateFileNLetterBase("Enter query, (Enter 'help' for help):");
             g_letterBase.setLockAll(true);
             prefix = g_letterBase.count();
         }
@@ -188,12 +188,13 @@ void run() {
                 // Display help
                 case "help":
                     g_letterBase.addTextln("Help:" ~ newline ~
-                        "quit - Quit" ~ newline ~
+                        "quit/command+Q - Quit" ~ newline ~
+                        "<query> - show (pop) answer after guess" ~ newline ~
                         "help - This help" ~ newline ~
                         "list - View stuff to recall" ~ newline ~
-                        "cls/clear - Clear screen (hide memory verse)" ~ newline ~
+                        "cls/clear - Clear screen (hide recall info)" ~ newline ~
                         "projects - List projects" ~ newline ~
-                        "load # - load project (see list)"
+                        "load # - load project (see projects)"
                     );
                 break;
                 case "projects":
@@ -242,7 +243,7 @@ void run() {
                     updateFileNLetterBase(title, "\n\n", list);
                 break;
                 // quit program
-                case "quit":
+                case "quit", "command+Q":
                     done = true;
                 break;
                 default:
