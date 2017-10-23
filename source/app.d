@@ -168,7 +168,7 @@ void run() {
             g_window.display;
             
             if (enterPressed) {
-                userInput = g_letterBase.getText()[ prefix .. $  ].stripRight;
+                userInput = g_letterBase.getText[prefix .. $].stripRight;
                 upDateStatus(userInput);
 
                 if (userInput in lines) {
