@@ -173,6 +173,7 @@ void run() {
 
                 if (userInput in lines) {
                     updateFileNLetterBase(lines[userInput]);
+                    userInput = "";
                     continue;
                 }
             }
@@ -245,7 +246,7 @@ void run() {
                     done = true;
                 break;
                 default:
-                    g_letterBase.addTextln(userInput.split[0], " - Unhandled command..");
+                    g_letterBase.addTextln(userInput.split[0], " - Unhandled command, or key ..");
                 break;
             }
         }
