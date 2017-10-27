@@ -12,6 +12,7 @@ struct Info {
 Info[string] lines;
 string title, list;
 
+enum programName = "Guess Pop";
 enum projects = "projects";
 /**
 	The Main
@@ -19,28 +20,25 @@ enum projects = "projects";
 int main(string[] args) {
     import std.stdio;
 
-    immutable program = "Guess Pop";
 	version(Windows) {
-		writeln( "This is a Windows version of " ~ program );
+		writeln("This is a Windows version of " ~ programName);
 	}
 	version(OSX) {
-		writeln( "This is a Mac version of " ~ program );
+		writeln("This is a Mac version of " ~ programName);
 	}
 	version(linux) {
-		writeln( "This is a Linux version of " ~ program );
+		writeln("This is a Linux version of " ~ programName);
 	}
 
 	if (setupAndStuff != 0) {
 		writeln("Error in setupAndStuff!");
 	}
 
-    run;
-
 	return 0;
 }
 
 auto setupAndStuff() {
-	immutable WELCOME = "Welcome to Way Master";
+	immutable WELCOME = "Welcome to " ~ programName;
 	g_window = new RenderWindow(VideoMode(800, 600),
 						WELCOME);
 
@@ -100,20 +98,23 @@ auto setupAndStuff() {
         Square(0,0, g_window.getSize.x, g_window.getSize.y));
     assert(g_letterBase, "Error loading bmp");
 
-	with(g_letterBase) {
-		updateFileNLetterBase("Welcome Guess Pop - Recall program" ~ newline);
-		setLockAll(true);
-	}
+    updateFileNLetterBase(WELCOME, " - Recall program" ~ newline);
+    g_letterBase.setLockAll(true);
 
-	run();
+    string[] files;
+
+    doProjects(files, /* show */ false);
+    run(files);
 
 	return 0;
 }
 
-void run() {
+void run(string[] files) {
     import std.path;
     import std.string;
-	
+    import std.file: readText;
+
+    auto helpText = readText("help.txt");
     with( g_letterBase )
         setTextType( TextType.line );
     scope(exit)
@@ -124,7 +125,6 @@ void run() {
     prefix = g_letterBase.count();
     auto firstRun = true;
     auto done = NO;
-    string[] files;
     while(! done) {
         if (! g_window.isOpen())
             done = YES;
@@ -178,8 +178,6 @@ void run() {
                 }
             }
         }
-        else
-            userInput = "q";
         if (userInput.length > 0) {
             import std.string: toLower;
 
@@ -189,36 +187,14 @@ void run() {
             switch (userInput.split[0].toLower) {
                 // Display help
                 case "help":
-                    g_letterBase.addTextln("Help:" ~ newline ~
-                        "quit/command+Q - Quit" ~ newline ~
-                        "<query> - show (pop) answer after guess" ~ newline ~
-                        "help - This help" ~ newline ~
-                        "list - View stuff to recall" ~ newline ~
-                        "cls/clear - Clear screen (hide recall info)" ~ newline ~
-                        "projects - List projects" ~ newline ~
-                        "load # - load project (see projects)"
-                    );
+                    updateFileNLetterBase(helpText);
                 break;
                 case "projects":
-                    import std.file: dirEntries, SpanMode;
-                    import std.path: dirSeparator;
-                    import std.range: enumerate;
-                    import std.string: split;
-
-                    g_letterBase.addTextln("File list:");
-                    files.length = 0;
-                    foreach(i, string name; dirEntries(buildPath(projects), "*.{txt}", SpanMode.shallow).enumerate) {
-                        import std.algorithm: until;
-                        import std.conv: to;
-
-                        name = name.split(dirSeparator)[1];
-                        g_letterBase.addTextln(i, " - ", name.until("."));
-                        files ~= name;
-                    }
+                    doProjects(files);
                 break;
                 case "load":
                     if (args.length != 1) {
-                        g_letterBase.addTextln("Wrong amount of parameters!");
+                        updateFileNLetterBase("Wrong amount of parameters!");
                         break;
                     }
                     string fileName;
@@ -231,15 +207,16 @@ void run() {
                         else
                             throw new Exception("Index out of bounds");
                     } catch(Exception e) {
-                        g_letterBase.addTextln("Input error!");
+                        updateFileNLetterBase("Input error!");
                         break;
                     }
                     loadProject(fileName);
-                    import std.algorithm: until;
-                    g_letterBase.addTextln(fileName.until("."), " - project loaded..");
+                    import std.path: stripExtension;
+                    updateFileNLetterBase(fileName.stripExtension, " - project loaded..");
                 break;
                 case "cls", "clear":
                     clearScreen;
+                    updateFileNLetterBase("Screen cleared..");
                 break;
                 case "list":
                     updateFileNLetterBase(title, "\n\n", list);
@@ -249,7 +226,7 @@ void run() {
                     done = true;
                 break;
                 default:
-                    g_letterBase.addTextln(userInput.split[0], " - Unhandled command, or key ..");
+                    updateFileNLetterBase(userInput.split[0], " - Unhandled command, or key ..");
                 break;
             }
         }
@@ -264,6 +241,25 @@ void run() {
 /// clear the screen
 void clearScreen() {
     g_letterBase.setText("");
+}
+
+void doProjects(ref string[] files, in bool show = true) {
+    import std.file: dirEntries, SpanMode;
+    import std.path: dirSeparator, buildPath, stripExtension;
+    import std.range: enumerate;
+    import std.string: split;
+
+    if (show)
+        updateFileNLetterBase("File list:");
+    files.length = 0;
+    foreach(i, string name; dirEntries(buildPath(projects), "*.{txt}", SpanMode.shallow).enumerate) {
+        import std.conv: to;
+
+        name = name.split(dirSeparator)[1];
+        if (show)
+            updateFileNLetterBase(i, " - ", name.stripExtension);
+        files ~= name;
+    }
 }
 
 void loadProject(in string fileName) {
