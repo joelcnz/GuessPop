@@ -4,7 +4,7 @@ import base;
 struct Info {
     string text;
     
-    string toString() {
+    string toString() const {
         return text;
     }
 }
@@ -18,7 +18,7 @@ enum projects = "projects";
 	The Main
  */
 int main(string[] args) {
-    import std.stdio;
+    import std.stdio: writeln;
 
 	version(Windows) {
 		writeln("This is a Windows version of " ~ programName);
@@ -30,15 +30,27 @@ int main(string[] args) {
 		writeln("This is a Linux version of " ~ programName);
 	}
 
-	if (setupAndStuff != 0) {
-		writeln("Error in setupAndStuff!");
+    int retVal = setupAndStuff(args);
+	if (retVal != 0) {
+        if (retVal == -10)
+            writeln("You must pass a name (eg. './guesspop Joel')");
+        else
+            writeln("Error in setupAndStuff!");
 	}
 
 	return 0;
 }
 
-auto setupAndStuff() {
-	immutable WELCOME = "Welcome to " ~ programName;
+auto setupAndStuff(in string[] args) {
+    string userName;
+    if (args.length > 1) {
+        import std.string: join;
+
+        userName = args[1 .. $].join(" ");
+    } else {
+        return -10;
+    }
+	immutable WELCOME = "Welcome, " ~ userName ~ ", to " ~ programName;
 	g_window = new RenderWindow(VideoMode(800, 600),
 						WELCOME);
 
@@ -46,7 +58,7 @@ auto setupAndStuff() {
 		gh("Aborting...");
 		g_window.close;
 
-		return 1;
+		return -1;
 	}
 
     g_checkPoints = true;
@@ -55,7 +67,7 @@ auto setupAndStuff() {
 
         writefln("File: %s, Error function: %s, Line: %s, Return value: %s",
             __FILE__, __FUNCTION__, __LINE__, retVal);
-        return -1;
+        return -2;
     }
 
     immutable g_fontSize = 40;
@@ -64,7 +76,7 @@ auto setupAndStuff() {
     if (! g_font) {
         import std.stdio: writeln;
         writeln("Font not load");
-        return -1;
+        return -3;
     }
 
     g_checkPoints = true;
@@ -110,9 +122,9 @@ auto setupAndStuff() {
 }
 
 void run(string[] files) {
+    import std.file: readText;
     import std.path;
     import std.string;
-    import std.file: readText;
 
     auto helpText = readText("help.txt");
     with( g_letterBase )
@@ -201,7 +213,7 @@ void run(string[] files) {
                     try {
                         import std.conv;
 
-                        int index = args[0].to!int;
+                        const index = args[0].to!int;
                         if (index >= 0 && index < files.length)
                             fileName = files[index];
                         else
@@ -245,7 +257,7 @@ void clearScreen() {
 
 void doProjects(ref string[] files, in bool show = true) {
     import std.file: dirEntries, SpanMode;
-    import std.path: dirSeparator, buildPath, stripExtension;
+    import std.path: buildPath, dirSeparator, stripExtension;
     import std.range: enumerate;
     import std.string: split;
 
