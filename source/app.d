@@ -1,4 +1,10 @@
 //#windows version needed for short cut to quit
+/+
+1 Psalm 32 1 -> A Maskil of David
+2 I went for a walk\nand fell down a hole. (notice the \n in there for newline)
+
+Keys 1 and 2 - values 'Psalm ..' and 'I went ..'
++/
 import base;
 
 struct Info {
@@ -277,7 +283,7 @@ void doProjects(ref string[] files, in bool show = true) {
 void loadProject(in string fileName) {
     import std.conv: to;
     import std.stdio: File;
-    import std.string: split;
+    import std.string: split, replace;
     import std.path: buildPath;
     import std.range: enumerate;
 
@@ -290,7 +296,9 @@ void loadProject(in string fileName) {
         if (i == 1)
             title = line.to!string;
         if (listFlag == Flag.up) {
-            lines[line.split[0].to!string] = Info(line[line.split[0].length + 1 .. $].to!string);
+            const key = line.split[0].to!string;
+            lines[key] = Info(line[line.split[0].length + 1 .. $].to!string);
+            lines[key].text = lines[key].text.replace(`\n`, "\n");
             list ~= line.to!string ~ "\n";
         }
         if (line.to!string == "list:")
