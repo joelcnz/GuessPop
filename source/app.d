@@ -239,6 +239,13 @@ void run(string[] files) {
                 case "list":
                     updateFileNLetterBase(title, "\n\n", list);
                 break;
+                case "keys":
+                    string result = title ~ ", Keys: ";
+                    foreach(key; lines.keys) {
+                        result ~= key ~ " ";
+                    }
+                    updateFileNLetterBase(result[0 .. $ - 1]);
+                break;
                 // quit program
                 case "quit", "command+q":
                     done = true;

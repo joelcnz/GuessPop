@@ -1,0 +1,4 @@
+GuessPop/_notes.txt
+
+ToDo:
+Put in having a second list, that just lists the keys.
