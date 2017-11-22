@@ -242,15 +242,6 @@ void run(string[] files) {
                 break;
                 case "keys":
                     updateFileNLetterBase(title, ", Keys: ", linesKeys);
-                    /+
-                    import std.algorithm: sort;
-
-                    string result = title ~ ", Keys: ";
-                    foreach(key; lines.keys.sort!"a < b") {
-                        result ~= key ~ " ";
-                    }
-                    updateFileNLetterBase(result[0 .. $ - 1]);
-                    +/
                 break;
                 // quit program
                 case "quit", "command+q":
