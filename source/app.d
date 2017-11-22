@@ -8,6 +8,7 @@ Keys 1 and 2 - values 'Psalm ..' and 'I went ..'
 import base;
 
 struct Info {
+    //static int id;
     string text;
     
     string toString() const {
@@ -16,7 +17,7 @@ struct Info {
 }
 
 Info[string] lines;
-string title, list;
+string title, list, linesKeys;
 
 enum programName = "Guess Pop";
 enum projects = "projects";
@@ -240,11 +241,16 @@ void run(string[] files) {
                     updateFileNLetterBase(title, "\n\n", list);
                 break;
                 case "keys":
+                    updateFileNLetterBase(title, ", Keys: ", linesKeys);
+                    /+
+                    import std.algorithm: sort;
+
                     string result = title ~ ", Keys: ";
-                    foreach(key; lines.keys) {
+                    foreach(key; lines.keys.sort!"a < b") {
                         result ~= key ~ " ";
                     }
                     updateFileNLetterBase(result[0 .. $ - 1]);
+                    +/
                 break;
                 // quit program
                 case "quit", "command+q":
@@ -298,6 +304,7 @@ void loadProject(in string fileName) {
 
     bool listFlag = Flag.down;
     list.length = 0;
+    linesKeys.length = 0;
     lines.clear;
     foreach(i, line; File(buildPath(projects, fileName)).byLine.enumerate) {
         if (i == 1)
@@ -306,9 +313,12 @@ void loadProject(in string fileName) {
             const key = line.split[0].to!string;
             lines[key] = Info(line[line.split[0].length + 1 .. $].to!string);
             lines[key].text = lines[key].text.replace(`\n`, "\n");
+            linesKeys ~= key ~ " ";
             list ~= line.to!string ~ "\n";
         }
         if (line.to!string == "list:")
             listFlag = Flag.up;
     }
+    import std.range: popBack;
+    linesKeys.popBack; // get rid of the extra space
 }
