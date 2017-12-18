@@ -4,4 +4,5 @@ guesspop
 dub.selections.json
 history.txt
 *.bmp
+*.png
 projects

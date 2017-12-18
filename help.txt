@@ -2,7 +2,8 @@ Help:
 quit/command+Q - Quit
 help - This help
 projects - List projects
-load # - Load project (see projects)<query> - show (pop) answer after guess
+load # - Load project (see projects)
+<query> - show (pop) answer after guess
 list - View stuff to recall
 keys - View just the keys
 cls/clear - Clear screen (hide recall info)

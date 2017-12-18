@@ -8,7 +8,6 @@ Keys 1 and 2 - values 'Psalm ..' and 'I went ..'
 import base;
 
 struct Info {
-    //static int id;
     string text;
     
     string toString() const {
@@ -21,6 +20,7 @@ string title, list, linesKeys;
 
 enum programName = "Guess Pop";
 enum projects = "projects";
+
 /**
 	The Main
  */
@@ -113,7 +113,7 @@ auto setupAndStuff(in string[] args) {
 
     g_window.setFramerateLimit(60);
 
-	g_letterBase = new LetterManager("lemgreen32.bmp", 8, 17,
+	g_letterBase = new LetterManager("lemblue.png", 8, 17,
         Square(0,0, g_window.getSize.x, g_window.getSize.y));
     assert(g_letterBase, "Error loading bmp");
 
@@ -134,8 +134,8 @@ void run(string[] files) {
     import std.string;
 
     auto helpText = readText("help.txt");
-    with( g_letterBase )
-        setTextType( TextType.line );
+    with(g_letterBase)
+        setTextType(TextType.line);
     scope(exit)
         g_window.close();
     string userInput;
@@ -244,11 +244,15 @@ void run(string[] files) {
                     updateFileNLetterBase(title, ", Keys: ", linesKeys);
                 break;
                 // quit program
-                case "quit", "command+q":
+                case "exit", "quit", "command+q":
                     done = true;
                 break;
                 default:
-                    updateFileNLetterBase(userInput.split[0], " - Unhandled command, or key ..");
+                    import std.algorithm: startsWith;
+                    import std.string: toLower;
+
+                    if (! (userInput.startsWith(";") || userInput.toLower.startsWith("rem")))
+                        updateFileNLetterBase(userInput.split[0], " - Unhandled command, or key ..");
                 break;
             }
         }
@@ -291,9 +295,9 @@ void loadProject(in string fileName) {
     import std.path: buildPath;
     import std.range: enumerate;
 
-    enum Flag : bool {down, up}
+    enum Flag {down, up}
 
-    bool listFlag = Flag.down;
+    Flag listFlag;
     list.length = 0;
     linesKeys.length = 0;
     lines.clear;
@@ -302,7 +306,7 @@ void loadProject(in string fileName) {
             title = line.to!string;
         if (listFlag == Flag.up) {
             const key = line.split[0].to!string;
-            lines[key] = Info(line[line.split[0].length + 1 .. $].to!string);
+            lines[key] = Info(line[key.length + 1 .. $].to!string);
             lines[key].text = lines[key].text.replace(`\n`, "\n");
             linesKeys ~= key ~ " ";
             list ~= line.to!string ~ "\n";
@@ -311,5 +315,6 @@ void loadProject(in string fileName) {
             listFlag = Flag.up;
     }
     import std.range: popBack;
+
     linesKeys.popBack; // get rid of the extra space
 }
