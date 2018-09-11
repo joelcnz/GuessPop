@@ -1,0 +1,14 @@
+title:
+WDJD & CcRAFT
+
+list:
+W Would you consider yourself to be a good person?
+D1 Do you think you have kept the Ten Commandments?
+J Judgement -- If God were to judge you by the Ten Commandments, do you think you would be innocent or guilty?
+D2 Destiny -- Do you think you would go to heaven or hell?
+C Concern -- Does that concern you?
+c Cross -- Jesus suffered for our sins, died and rose from the dead.
+R Repentance -- Confess and forsake all sin.
+A and
+F Faith -- More than belief, it's trust in Jesus for salvation.
+T Truth -- Point to the truth of the Bible and encourage them to get right with God today.

@@ -1,7 +1,7 @@
 module base;
 
 import std.conv;
-import std.datetime;
+import std.datetime.stopwatch;
 import std.range;
 import std.stdio;
 import std.string;
@@ -14,9 +14,6 @@ enum YES = true, NO = false;
 LetterManager g_letterBase;
 
 void updateFileNLetterBase(T...)(T args) {
-	import std.typecons: tuple; // untested
-	import std.conv: text;
-
 	g_letterBase.addTextln(args);
 	upDateStatus(args);
 }

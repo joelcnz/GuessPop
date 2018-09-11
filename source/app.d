@@ -26,12 +26,22 @@ enum projects = "projects";
  */
 int main(string[] args) {
     import std.stdio: writeln;
-
-	version(Windows) {
-		writeln("This is a Windows version of " ~ programName);
+	
+	scope(exit) {
+		writeln;
+		writeln("###");
+		writeln("# #");
+		writeln("###");
+		writeln("#  ");
+		writeln("#  ");
+		writeln;
 	}
+
 	version(OSX) {
 		writeln("This is a Mac version of " ~ programName);
+	}
+	version(Windows) {
+		writeln("This is a Windows version of " ~ programName);
 	}
 	version(linux) {
 		writeln("This is a Linux version of " ~ programName);
@@ -60,14 +70,14 @@ auto setupAndStuff(in string[] args) {
 	immutable WELCOME = "Welcome, " ~ userName ~ ", to " ~ programName;
 	g_window = new RenderWindow(VideoMode(800, 600),
 						WELCOME);
-
+/+
     if (setup != 0) {
 		gh("Aborting...");
 		g_window.close;
 
 		return -1;
 	}
-
++/
     g_checkPoints = true;
     if (int retVal = jec.setup != 0) {
         import std.stdio: writefln;
@@ -84,15 +94,6 @@ auto setupAndStuff(in string[] args) {
         import std.stdio: writeln;
         writeln("Font not load");
         return -3;
-    }
-
-    g_checkPoints = true;
-    if (int retVal = jec.setup != 0) {
-        import std.stdio: writefln;
-
-        writefln("File: %s, Error function: %s, Line: %s, Return value: %s",
-            __FILE__, __FUNCTION__, __LINE__, retVal);
-        return retVal;
     }
 
     //immutable size = 100, lower = 40;
@@ -297,7 +298,7 @@ void loadProject(in string fileName) {
 
     enum Flag {down, up}
 
-    Flag listFlag;
+    Flag listFlag = Flag.down;
     list.length = 0;
     linesKeys.length = 0;
     lines.clear;
